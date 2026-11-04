@@ -15,15 +15,17 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Extract v2.1 source ZIP
+      - name: Extract v2.2 Android source ZIP
         shell: bash
         run: |
           set -euo pipefail
-          test -f SMBPrivateGallery_v2.1_NoThumbnails_Source.zip
+          test -f SMBPrivateGallery_v2.2_Remember_Rotate_Source.zip
           mkdir -p build-source
-          unzip -q -o SMBPrivateGallery_v2.1_NoThumbnails_Source.zip -d build-source
+          unzip -q -o SMBPrivateGallery_v2.2_Remember_Rotate_Source.zip -d build-source
           test -f build-source/settings.gradle
           test -f build-source/app/build.gradle
+          test -f build-source/app/src/main/java/com/privategallery/smb/CredentialVault.java
+          echo "v2.2 source extracted successfully"
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -49,13 +51,13 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build v2.1 debug APK
+      - name: Build v2.2 debug APK
         run: gradle --no-daemon --stacktrace -p build-source :app:assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SMBPrivateGallery-v2.1-debug-apk
+          name: SMBPrivateGallery-v2.2-debug-apk
           path: build-source/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
