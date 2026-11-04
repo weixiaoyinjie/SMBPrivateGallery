@@ -17,6 +17,16 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
+      - name: Extract Android source ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          unzip -q -o SMBPrivateGallery_v1_Source.zip
+          test -f SMBPrivateGallery_v1/settings.gradle
+          test -f SMBPrivateGallery_v1/build.gradle
+          test -f SMBPrivateGallery_v1/app/build.gradle
+          echo "Android project extracted successfully"
+
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
@@ -43,13 +53,13 @@ jobs:
           gradle-version: '8.9'
 
       - name: Build debug APK
-        run: gradle --no-daemon --stacktrace :app:assembleDebug
+        run: gradle --no-daemon --stacktrace -p SMBPrivateGallery_v1 :app:assembleDebug
 
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SMBPrivateGallery-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: SMBPrivateGallery_v1/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
